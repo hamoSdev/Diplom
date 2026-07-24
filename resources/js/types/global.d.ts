@@ -1,4 +1,5 @@
 import type { Auth } from '@/types/auth';
+import type { Config as ZiggyConfig } from 'ziggy-js';
 
 // Extend ImportMeta interface for Vite...
 declare module 'vite/client' {
@@ -22,6 +23,11 @@ declare module '@inertiajs/core' {
             [key: string]: unknown;
         };
     }
+}
+
+declare global {
+    // Ziggy's route() falls back to this when no config is passed explicitly...
+    var Ziggy: ZiggyConfig;
 }
 
 declare module 'vue' {

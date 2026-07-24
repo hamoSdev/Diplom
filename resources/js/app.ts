@@ -4,6 +4,16 @@ import AppLayout from '@/layouts/AppLayout.vue';
 import AuthLayout from '@/layouts/AuthLayout.vue';
 import SettingsLayout from '@/layouts/settings/Layout.vue';
 import { initializeFlashToast } from '@/lib/flashToast';
+import { Ziggy } from '@/ziggy.config';
+import type { Config } from 'ziggy-js';
+import { ZiggyVue } from 'ziggy-js';
+
+// The generated config is plain JS, so its HTTP verbs widen to string...
+const ziggy = Ziggy as Config;
+
+// The @routes directive only defines window.Ziggy in the browser, so SSR needs
+// the generated config assigned globally before any page module calls route()...
+globalThis.Ziggy = ziggy;
 
 const appName = import.meta.env.VITE_APP_NAME || 'Laravel';
 
@@ -20,6 +30,9 @@ createInertiaApp({
             default:
                 return AppLayout;
         }
+    },
+    withApp: (app) => {
+        app.use(ZiggyVue, ziggy);
     },
     progress: {
         color: '#4B5563',

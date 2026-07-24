@@ -21,8 +21,8 @@ import {
 import { Spinner } from '@/components/ui/spinner';
 import { useAppearance } from '@/composables/useAppearance';
 import { useTwoFactorAuth } from '@/composables/useTwoFactorAuth';
-import { confirm } from '@/routes/two-factor';
 import type { TwoFactorConfigContent } from '@/types';
+import { route } from 'ziggy-js';
 
 type Props = {
     requiresConfirmation: boolean;
@@ -238,7 +238,8 @@ watch(
 
                 <template v-else>
                     <Form
-                        v-bind="confirm.form()"
+                        :action="route('two-factor.confirm')"
+                        method="post"
                         error-bag="confirmTwoFactorAuthentication"
                         reset-on-error
                         @finish="code = ''"

@@ -1,5 +1,4 @@
 <script setup lang="ts">
-import type { UrlMethodPair } from '@inertiajs/core';
 import { router } from '@inertiajs/vue3';
 import { usePasskeyVerify } from '@laravel/passkeys/vue';
 import { KeyRound } from '@lucide/vue';
@@ -10,8 +9,8 @@ import { Spinner } from '@/components/ui/spinner';
 
 type Props = {
     routes?: {
-        options: UrlMethodPair;
-        submit: UrlMethodPair;
+        options: string;
+        submit: string;
     };
     label?: string;
     loadingLabel?: string;
@@ -24,8 +23,8 @@ const { verify, isLoading, error, isSupported } = usePasskeyVerify({
     ...(props.routes
         ? {
               routes: {
-                  options: props.routes.options.url,
-                  submit: props.routes.submit.url,
+                  options: props.routes.options,
+                  submit: props.routes.submit,
               },
           }
         : {}),

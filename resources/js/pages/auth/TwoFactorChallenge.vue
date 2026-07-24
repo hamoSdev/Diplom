@@ -9,8 +9,8 @@ import {
     InputOTPGroup,
     InputOTPSlot,
 } from '@/components/ui/input-otp';
-import { store } from '@/routes/two-factor/login';
 import type { TwoFactorConfigContent } from '@/types';
+import { route } from 'ziggy-js';
 
 const showRecoveryInput = ref<boolean>(false);
 const code = ref<string>('');
@@ -53,7 +53,8 @@ const toggleRecoveryMode = (clearErrors: () => void): void => {
     <div class="space-y-6">
         <template v-if="!showRecoveryInput">
             <Form
-                v-bind="store.form()"
+                :action="route('two-factor.login.store')"
+                method="post"
                 class="space-y-4"
                 reset-on-error
                 @error="code = ''"
@@ -100,7 +101,8 @@ const toggleRecoveryMode = (clearErrors: () => void): void => {
 
         <template v-else>
             <Form
-                v-bind="store.form()"
+                :action="route('two-factor.login.store')"
+                method="post"
                 class="space-y-4"
                 reset-on-error
                 #default="{ errors, processing, clearErrors }"
