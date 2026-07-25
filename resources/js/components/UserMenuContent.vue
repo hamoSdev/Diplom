@@ -46,6 +46,7 @@ defineProps<Props>();
         <Link
             class="block w-full cursor-pointer"
             :href="route('logout')"
+            method="post"
             @click="handleLogout"
             as="button"
             data-test="logout-button"

@@ -1,6 +1,13 @@
 <script setup lang="ts">
-import { Link } from '@inertiajs/vue3';
-import { BookOpen, FolderGit2, LayoutGrid } from '@lucide/vue';
+import { Link, usePage } from '@inertiajs/vue3';
+import {
+    BookOpen,
+    GraduationCap,
+    Library,
+    LayoutGrid,
+    Users,
+} from '@lucide/vue';
+import { computed } from 'vue';
 import AppLogo from '@/components/AppLogo.vue';
 import NavFooter from '@/components/NavFooter.vue';
 import NavMain from '@/components/NavMain.vue';
@@ -17,26 +24,55 @@ import {
 import type { NavItem } from '@/types';
 import { route } from 'ziggy-js';
 
-const mainNavItems: NavItem[] = [
-    {
-        title: 'Dashboard',
-        href: route('dashboard'),
-        icon: LayoutGrid,
-    },
-];
+const page = usePage();
+const role = computed(() => page.props.auth.user.role);
 
-const footerNavItems: NavItem[] = [
-    {
-        title: 'Repository',
-        href: 'https://github.com/laravel/vue-starter-kit',
-        icon: FolderGit2,
-    },
-    {
-        title: 'Documentation',
-        href: 'https://laravel.com/docs/starter-kits#vue',
-        icon: BookOpen,
-    },
-];
+const mainNavItems = computed<NavItem[]>(() => {
+    const items: NavItem[] = [
+        {
+            title: 'Dashboard',
+            href: route('dashboard'),
+            icon: LayoutGrid,
+        },
+    ];
+
+    if (role.value === 'lecturer') {
+        items.push({
+            title: 'Courses',
+            href: route('courses.index'),
+            icon: BookOpen,
+        });
+    }
+
+    if (role.value === 'admin') {
+        items.push(
+            {
+                title: 'Users',
+                href: route('admin.users.index'),
+                icon: Users,
+            },
+            {
+                title: 'Faculties',
+                href: route('admin.faculties.index'),
+                icon: GraduationCap,
+            },
+            {
+                title: 'Subjects',
+                href: route('admin.subjects.index'),
+                icon: Library,
+            },
+            {
+                title: 'Courses',
+                href: route('admin.courses.index'),
+                icon: BookOpen,
+            },
+        );
+    }
+
+    return items;
+});
+
+const footerNavItems: NavItem[] = [];
 </script>
 
 <template>

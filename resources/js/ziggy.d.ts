@@ -55,6 +55,71 @@ declare module 'ziggy-js' {
     "sanctum.csrf-cookie": [],
     "home": [],
     "dashboard": [],
+    "admin.users.index": [],
+    "admin.users.store": [],
+    "admin.users.update": [
+        {
+            "name": "user",
+            "required": true,
+            "binding": "id"
+        }
+    ],
+    "admin.users.destroy": [
+        {
+            "name": "user",
+            "required": true,
+            "binding": "id"
+        }
+    ],
+    "admin.faculties.index": [],
+    "admin.faculties.store": [],
+    "admin.faculties.update": [
+        {
+            "name": "faculty",
+            "required": true,
+            "binding": "id"
+        }
+    ],
+    "admin.faculties.destroy": [
+        {
+            "name": "faculty",
+            "required": true,
+            "binding": "id"
+        }
+    ],
+    "admin.subjects.index": [],
+    "admin.subjects.store": [],
+    "admin.subjects.update": [
+        {
+            "name": "subject",
+            "required": true,
+            "binding": "id"
+        }
+    ],
+    "admin.subjects.destroy": [
+        {
+            "name": "subject",
+            "required": true,
+            "binding": "id"
+        }
+    ],
+    "admin.courses.index": [],
+    "admin.courses.store": [],
+    "admin.courses.update": [
+        {
+            "name": "course",
+            "required": true,
+            "binding": "id"
+        }
+    ],
+    "admin.courses.destroy": [
+        {
+            "name": "course",
+            "required": true,
+            "binding": "id"
+        }
+    ],
+    "courses.index": [],
     "profile.edit": [],
     "profile.update": [],
     "profile.destroy": [],
