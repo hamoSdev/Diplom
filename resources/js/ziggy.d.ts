@@ -120,6 +120,22 @@ declare module 'ziggy-js' {
         }
     ],
     "courses.index": [],
+    "courses.store": [],
+    "courses.update": [
+        {
+            "name": "course",
+            "required": true,
+            "binding": "id"
+        }
+    ],
+    "courses.destroy": [
+        {
+            "name": "course",
+            "required": true,
+            "binding": "id"
+        }
+    ],
+    "learning.index": [],
     "profile.edit": [],
     "profile.update": [],
     "profile.destroy": [],

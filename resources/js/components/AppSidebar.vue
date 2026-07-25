@@ -5,6 +5,7 @@ import {
     GraduationCap,
     Library,
     LayoutGrid,
+    Sparkles,
     Users,
 } from '@lucide/vue';
 import { computed } from 'vue';
@@ -41,6 +42,14 @@ const mainNavItems = computed<NavItem[]>(() => {
             title: 'Courses',
             href: route('courses.index'),
             icon: BookOpen,
+        });
+    }
+
+    if (role.value === 'student') {
+        items.push({
+            title: 'My learning',
+            href: route('learning.index'),
+            icon: Sparkles,
         });
     }
 

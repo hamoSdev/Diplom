@@ -5,7 +5,8 @@ export type CourseStatus = 'draft' | 'generating' | 'ready' | 'failed';
 export type CourseListItem = {
     id: number;
     title: string;
+    subject_id: number | null;
+    subject_name: string | null;
     status: CourseStatus;
     status_label: string;
-    created_at: string | null;
 };
