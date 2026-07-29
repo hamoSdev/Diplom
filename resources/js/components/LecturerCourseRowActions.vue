@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { Form } from '@inertiajs/vue3';
+import { Form, Link } from '@inertiajs/vue3';
 import { ref } from 'vue';
 import LecturerCourseFields from '@/components/LecturerCourseFields.vue';
 import { Button } from '@/components/ui/button';
@@ -27,6 +27,24 @@ const deleteOpen = ref(false);
 
 <template>
     <div class="flex justify-end gap-2">
+        <Button variant="outline" size="sm" as-child>
+            <Link :href="route('courses.topics.index', props.course.id)">
+                Topics
+            </Link>
+        </Button>
+
+        <Button variant="outline" size="sm" as-child>
+            <Link :href="route('courses.questions.index', props.course.id)">
+                Questions
+            </Link>
+        </Button>
+
+        <Button variant="outline" size="sm" as-child>
+            <Link :href="route('courses.materials.index', props.course.id)">
+                Materials
+            </Link>
+        </Button>
+
         <Dialog v-model:open="editOpen">
             <DialogTrigger as-child>
                 <Button variant="outline" size="sm">Edit</Button>

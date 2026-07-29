@@ -54,7 +54,19 @@ declare module 'ziggy-js' {
     ],
     "sanctum.csrf-cookie": [],
     "home": [],
+    "ai-learning": [],
+    "our-courses": [],
+    "faq": [],
+    "become-lecturer": [],
+    "our-lecturers": [],
     "dashboard": [],
+    "materials.download": [
+        {
+            "name": "material",
+            "required": true,
+            "binding": "id"
+        }
+    ],
     "admin.users.index": [],
     "admin.users.store": [],
     "admin.users.update": [
@@ -135,7 +147,165 @@ declare module 'ziggy-js' {
             "binding": "id"
         }
     ],
+    "courses.materials.index": [
+        {
+            "name": "course",
+            "required": true,
+            "binding": "id"
+        }
+    ],
+    "courses.materials.store": [
+        {
+            "name": "course",
+            "required": true,
+            "binding": "id"
+        }
+    ],
+    "courses.materials.destroy": [
+        {
+            "name": "course",
+            "required": true,
+            "binding": "id"
+        },
+        {
+            "name": "material",
+            "required": true,
+            "binding": "id"
+        }
+    ],
+    "courses.topics.index": [
+        {
+            "name": "course",
+            "required": true,
+            "binding": "id"
+        }
+    ],
+    "courses.topics.store": [
+        {
+            "name": "course",
+            "required": true,
+            "binding": "id"
+        }
+    ],
+    "courses.topics.update": [
+        {
+            "name": "course",
+            "required": true,
+            "binding": "id"
+        },
+        {
+            "name": "topic",
+            "required": true,
+            "binding": "id"
+        }
+    ],
+    "courses.topics.destroy": [
+        {
+            "name": "course",
+            "required": true,
+            "binding": "id"
+        },
+        {
+            "name": "topic",
+            "required": true,
+            "binding": "id"
+        }
+    ],
+    "courses.questions.index": [
+        {
+            "name": "course",
+            "required": true,
+            "binding": "id"
+        }
+    ],
+    "courses.questions.store": [
+        {
+            "name": "course",
+            "required": true,
+            "binding": "id"
+        }
+    ],
+    "courses.questions.destroy": [
+        {
+            "name": "course",
+            "required": true,
+            "binding": "id"
+        },
+        {
+            "name": "question",
+            "required": true,
+            "binding": "id"
+        }
+    ],
+    "editor.index": [],
+    "editor.store": [],
     "learning.index": [],
+    "learning.courses.show": [
+        {
+            "name": "course",
+            "required": true,
+            "binding": "id"
+        }
+    ],
+    "course-exam.show": [
+        {
+            "name": "course",
+            "required": true,
+            "binding": "id"
+        }
+    ],
+    "course-exam.start": [
+        {
+            "name": "course",
+            "required": true,
+            "binding": "id"
+        }
+    ],
+    "course-exam.take": [
+        {
+            "name": "course",
+            "required": true,
+            "binding": "id"
+        }
+    ],
+    "course-exam.answer": [
+        {
+            "name": "course",
+            "required": true,
+            "binding": "id"
+        }
+    ],
+    "course-exam.skip": [
+        {
+            "name": "course",
+            "required": true,
+            "binding": "id"
+        }
+    ],
+    "course-exam.result": [
+        {
+            "name": "course",
+            "required": true,
+            "binding": "id"
+        },
+        {
+            "name": "attempt",
+            "required": true,
+            "binding": "id"
+        }
+    ],
+    "exam.show": [],
+    "exam.start": [],
+    "exam.take": [],
+    "exam.answer": [],
+    "exam.skip": [],
+    "exam.result": [
+        {
+            "name": "attempt",
+            "required": true,
+            "binding": "id"
+        }
+    ],
     "profile.edit": [],
     "profile.update": [],
     "profile.destroy": [],

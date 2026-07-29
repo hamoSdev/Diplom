@@ -9,6 +9,7 @@ use Illuminate\Database\Eloquent\Attributes\Fillable;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Support\Carbon;
 
 /**
@@ -17,6 +18,7 @@ use Illuminate\Support\Carbon;
  * @property int|null $subject_id
  * @property string $title
  * @property string|null $description
+ * @property string|null $content
  * @property CourseGenerationMode $generation_mode
  * @property CourseStatus $status
  * @property int $exam_length
@@ -24,7 +26,7 @@ use Illuminate\Support\Carbon;
  * @property Carbon|null $created_at
  * @property Carbon|null $updated_at
  */
-#[Fillable(['title', 'description', 'subject_id', 'lecturer_id', 'generation_mode', 'exam_length', 'questions_per_topic'])]
+#[Fillable(['title', 'description', 'content', 'subject_id', 'lecturer_id', 'generation_mode', 'exam_length', 'questions_per_topic'])]
 class Course extends Model
 {
     /** @use HasFactory<CourseFactory> */
@@ -71,5 +73,35 @@ class Course extends Model
     public function subject(): BelongsTo
     {
         return $this->belongsTo(Subject::class);
+    }
+
+    /**
+     * Files uploaded as material for this course.
+     *
+     * @return HasMany<CourseMaterial, $this>
+     */
+    public function materials(): HasMany
+    {
+        return $this->hasMany(CourseMaterial::class)->latest('id');
+    }
+
+    /**
+     * Topics this course is broken into, in the lecturer's order.
+     *
+     * @return HasMany<Topic, $this>
+     */
+    public function topics(): HasMany
+    {
+        return $this->hasMany(Topic::class)->orderBy('position');
+    }
+
+    /**
+     * Questions authored for this course's exam.
+     *
+     * @return HasMany<Question, $this>
+     */
+    public function questions(): HasMany
+    {
+        return $this->hasMany(Question::class)->latest('id');
     }
 }

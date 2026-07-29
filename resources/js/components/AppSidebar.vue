@@ -5,6 +5,7 @@ import {
     GraduationCap,
     Library,
     LayoutGrid,
+    PenLine,
     Sparkles,
     Users,
 } from '@lucide/vue';
@@ -76,6 +77,14 @@ const mainNavItems = computed<NavItem[]>(() => {
                 icon: BookOpen,
             },
         );
+    }
+
+    if (role.value === 'lecturer' || role.value === 'admin') {
+        items.push({
+            title: 'Editor',
+            href: route('editor.index'),
+            icon: PenLine,
+        });
     }
 
     return items;

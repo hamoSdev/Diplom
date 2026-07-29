@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Models\Course;
+use App\Models\CourseMaterial;
 use App\Models\Subject;
 use Illuminate\Http\Request;
 use Inertia\Inertia;
@@ -37,6 +38,38 @@ class LearningController extends Controller
         return Inertia::render('learning/Index', [
             'faculty' => $faculty?->only('id', 'name'),
             'subjects' => $subjects,
+        ]);
+    }
+
+    /**
+     * Read a single course. Accessible only if the course belongs to a subject
+     * of the student's faculty; its HTML body is sanitized before display.
+     */
+    public function show(Request $request, Course $course): Response
+    {
+        $course->load('subject:id,name,faculty_id', 'lecturer:id,name', 'materials');
+
+        abort_unless(
+            $course->subject !== null
+                && $course->subject->faculty_id === $request->user()->faculty_id,
+            403,
+        );
+
+        return Inertia::render('learning/CourseShow', [
+            'course' => [
+                'id' => $course->id,
+                'title' => $course->title,
+                'subject_name' => $course->subject->name,
+                'lecturer_name' => $course->lecturer->name,
+                'status_label' => $course->status->label(),
+                'content' => $course->content === null ? null : clean($course->content, 'course'),
+                'has_exam' => $course->questions()->exists(),
+                'materials' => $course->materials->map(fn (CourseMaterial $material): array => [
+                    'id' => $material->id,
+                    'original_name' => $material->original_name,
+                    'size' => $material->size,
+                ]),
+            ],
         ]);
     }
 }
