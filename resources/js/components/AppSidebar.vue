@@ -2,7 +2,9 @@
 import { Link, usePage } from '@inertiajs/vue3';
 import {
     BookOpen,
+    Compass,
     GraduationCap,
+    Inbox,
     Library,
     LayoutGrid,
     PenLine,
@@ -47,11 +49,23 @@ const mainNavItems = computed<NavItem[]>(() => {
     }
 
     if (role.value === 'student') {
-        items.push({
-            title: 'My learning',
-            href: route('learning.index'),
-            icon: Sparkles,
-        });
+        items.push(
+            {
+                title: 'My learning',
+                href: route('learning.index'),
+                icon: Sparkles,
+            },
+            {
+                title: 'Explore',
+                href: route('explore.index'),
+                icon: Compass,
+            },
+            {
+                title: 'Lecturers',
+                href: route('lecturers.index'),
+                icon: GraduationCap,
+            },
+        );
     }
 
     if (role.value === 'admin') {
@@ -75,6 +89,11 @@ const mainNavItems = computed<NavItem[]>(() => {
                 title: 'Courses',
                 href: route('admin.courses.index'),
                 icon: BookOpen,
+            },
+            {
+                title: 'Applications',
+                href: route('admin.applications.index'),
+                icon: Inbox,
             },
         );
     }

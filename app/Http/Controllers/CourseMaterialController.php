@@ -10,7 +10,6 @@ use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Storage;
 use Inertia\Inertia;
-use Inertia\Response;
 use Symfony\Component\HttpFoundation\StreamedResponse;
 
 /**
@@ -21,19 +20,6 @@ use Symfony\Component\HttpFoundation\StreamedResponse;
  */
 class CourseMaterialController extends Controller
 {
-    /**
-     * List and manage the files of one of the lecturer's courses.
-     */
-    public function index(Course $course): Response
-    {
-        $this->authorize('update', $course);
-
-        return Inertia::render('courses/Materials', [
-            'course' => $course->only('id', 'title'),
-            'materials' => $course->materials->map($this->materialData(...)),
-        ]);
-    }
-
     /**
      * Upload one or more files as material for the course.
      */
@@ -52,7 +38,7 @@ class CourseMaterialController extends Controller
 
         Inertia::flash('toast', ['type' => 'success', 'message' => __('Material uploaded.')]);
 
-        return to_route('courses.materials.index', $course);
+        return to_route('courses.show', $course);
     }
 
     /**
@@ -68,7 +54,7 @@ class CourseMaterialController extends Controller
 
         Inertia::flash('toast', ['type' => 'success', 'message' => __('Material deleted.')]);
 
-        return to_route('courses.materials.index', $course);
+        return to_route('courses.show', $course);
     }
 
     /**
@@ -87,19 +73,5 @@ class CourseMaterialController extends Controller
         abort_unless($allowed, 403);
 
         return Storage::download($material->path, $material->original_name);
-    }
-
-    /**
-     * Shape a material row for the frontend.
-     *
-     * @return array<string, mixed>
-     */
-    private function materialData(CourseMaterial $material): array
-    {
-        return [
-            'id' => $material->id,
-            'original_name' => $material->original_name,
-            'size' => $material->size,
-        ];
     }
 }

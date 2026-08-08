@@ -17,6 +17,7 @@ export type ExamNav = {
 export type ExamLastResult = {
     id: number;
     score: number | null;
+    grade: string | null;
     grade_label: string | null;
     level_label: string;
 };
@@ -61,6 +62,7 @@ export type ExamTopicScore = {
 export type ExamResult = {
     score: number | null;
     max_score: number;
+    grade: string | null;
     grade_label: string | null;
     level_label: string;
     correct: number;

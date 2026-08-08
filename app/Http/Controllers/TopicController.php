@@ -7,7 +7,6 @@ use App\Models\Course;
 use App\Models\Topic;
 use Illuminate\Http\RedirectResponse;
 use Inertia\Inertia;
-use Inertia\Response;
 
 /**
  * Topics of a course, managed by the owning lecturer. Later steps (per-topic
@@ -16,22 +15,6 @@ use Inertia\Response;
  */
 class TopicController extends Controller
 {
-    /**
-     * List and manage the topics of one of the lecturer's courses.
-     */
-    public function index(Course $course): Response
-    {
-        $this->authorize('update', $course);
-
-        return Inertia::render('courses/Topics', [
-            'course' => $course->only('id', 'title'),
-            'topics' => $course->topics->map(fn (Topic $topic): array => [
-                'id' => $topic->id,
-                'title' => $topic->title,
-            ]),
-        ]);
-    }
-
     /**
      * Add a topic to the end of the course's list.
      */
@@ -46,7 +29,7 @@ class TopicController extends Controller
 
         Inertia::flash('toast', ['type' => 'success', 'message' => __('Topic added.')]);
 
-        return to_route('courses.topics.index', $course);
+        return to_route('courses.show', $course);
     }
 
     /**
@@ -61,7 +44,7 @@ class TopicController extends Controller
 
         Inertia::flash('toast', ['type' => 'success', 'message' => __('Topic updated.')]);
 
-        return to_route('courses.topics.index', $course);
+        return to_route('courses.show', $course);
     }
 
     /**
@@ -76,6 +59,6 @@ class TopicController extends Controller
 
         Inertia::flash('toast', ['type' => 'success', 'message' => __('Topic deleted.')]);
 
-        return to_route('courses.topics.index', $course);
+        return to_route('courses.show', $course);
     }
 }

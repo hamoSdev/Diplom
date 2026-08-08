@@ -1,6 +1,9 @@
 <script setup lang="ts">
 import { Head, Link } from '@inertiajs/vue3';
+import { computed } from 'vue';
+import GradeBadge from '@/components/GradeBadge.vue';
 import Heading from '@/components/Heading.vue';
+import StatRing from '@/components/StatRing.vue';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import type { ExamNav, ExamResult } from '@/types';
@@ -19,8 +22,14 @@ const props = defineProps<{
     nav?: ExamNav;
 }>();
 
+const scorePercent = computed(() =>
+    props.result.score === null
+        ? 0
+        : Math.round((props.result.score / props.result.max_score) * 100),
+);
+
 function barClass(percent: number): string {
-    if (percent >= 70) {
+    if (percent >= 80) {
         return 'bg-emerald-500';
     }
 
@@ -30,6 +39,10 @@ function barClass(percent: number): string {
 
     return 'bg-destructive';
 }
+
+const ringColor = computed(() =>
+    barClass(scorePercent.value).replace('bg-', 'stroke-'),
+);
 </script>
 
 <template>
@@ -42,23 +55,24 @@ function barClass(percent: number): string {
         />
 
         <Card>
-            <CardHeader>
-                <CardTitle class="text-sm text-muted-foreground">
-                    {{ result.grade_label }}
-                </CardTitle>
-            </CardHeader>
-            <CardContent class="flex items-end justify-between">
-                <div>
-                    <span class="text-4xl font-semibold">{{
-                        result.score
-                    }}</span>
-                    <span class="text-lg text-muted-foreground">
-                        / {{ result.max_score }}
-                    </span>
-                </div>
-                <div class="text-right text-sm text-muted-foreground">
-                    <p>{{ result.correct }} of {{ result.total }} correct</p>
-                    <p>started as {{ result.level_label }}</p>
+            <CardContent class="flex items-center gap-6 pt-6">
+                <StatRing
+                    :percent="scorePercent"
+                    :center-top="result.score ?? '—'"
+                    :center-bottom="`/ ${result.max_score}`"
+                    :color-class="ringColor"
+                />
+                <div class="flex flex-col items-start gap-2">
+                    <GradeBadge
+                        :grade="result.grade"
+                        :label="result.grade_label"
+                    />
+                    <p class="text-sm">
+                        {{ result.correct }} of {{ result.total }} correct
+                    </p>
+                    <p class="text-sm text-muted-foreground">
+                        started as {{ result.level_label }}
+                    </p>
                 </div>
             </CardContent>
         </Card>

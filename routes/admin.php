@@ -4,6 +4,7 @@ use App\Http\Controllers\Admin\CourseController;
 use App\Http\Controllers\Admin\FacultyController;
 use App\Http\Controllers\Admin\SubjectController;
 use App\Http\Controllers\Admin\UserController;
+use App\Http\Controllers\LecturerApplicationController;
 use Illuminate\Support\Facades\Route;
 
 Route::middleware(['auth', 'verified', 'role:admin'])->prefix('admin')->name('admin.')->group(function () {
@@ -26,4 +27,9 @@ Route::middleware(['auth', 'verified', 'role:admin'])->prefix('admin')->name('ad
     Route::post('courses', [CourseController::class, 'store'])->name('courses.store');
     Route::put('courses/{course}', [CourseController::class, 'update'])->name('courses.update');
     Route::delete('courses/{course}', [CourseController::class, 'destroy'])->name('courses.destroy');
+
+    Route::get('applications', [LecturerApplicationController::class, 'index'])->name('applications.index');
+    Route::get('applications/{application}/cv', [LecturerApplicationController::class, 'download'])->name('applications.cv');
+    Route::put('applications/{application}', [LecturerApplicationController::class, 'update'])->name('applications.update');
+    Route::delete('applications/{application}', [LecturerApplicationController::class, 'destroy'])->name('applications.destroy');
 });

@@ -2,7 +2,9 @@
 export type StudentCourse = {
     id: number;
     title: string;
+    description: string | null;
     lecturer_name: string;
+    status: string;
     status_label: string;
 };
 

@@ -58,6 +58,7 @@ declare module 'ziggy-js' {
     "our-courses": [],
     "faq": [],
     "become-lecturer": [],
+    "become-lecturer.store": [],
     "our-lecturers": [],
     "dashboard": [],
     "materials.download": [
@@ -131,6 +132,28 @@ declare module 'ziggy-js' {
             "binding": "id"
         }
     ],
+    "admin.applications.index": [],
+    "admin.applications.cv": [
+        {
+            "name": "application",
+            "required": true,
+            "binding": "id"
+        }
+    ],
+    "admin.applications.update": [
+        {
+            "name": "application",
+            "required": true,
+            "binding": "id"
+        }
+    ],
+    "admin.applications.destroy": [
+        {
+            "name": "application",
+            "required": true,
+            "binding": "id"
+        }
+    ],
     "courses.index": [],
     "courses.store": [],
     "courses.update": [
@@ -147,7 +170,14 @@ declare module 'ziggy-js' {
             "binding": "id"
         }
     ],
-    "courses.materials.index": [
+    "courses.show": [
+        {
+            "name": "course",
+            "required": true,
+            "binding": "id"
+        }
+    ],
+    "courses.generate": [
         {
             "name": "course",
             "required": true,
@@ -169,13 +199,6 @@ declare module 'ziggy-js' {
         },
         {
             "name": "material",
-            "required": true,
-            "binding": "id"
-        }
-    ],
-    "courses.topics.index": [
-        {
-            "name": "course",
             "required": true,
             "binding": "id"
         }
@@ -211,13 +234,6 @@ declare module 'ziggy-js' {
             "binding": "id"
         }
     ],
-    "courses.questions.index": [
-        {
-            "name": "course",
-            "required": true,
-            "binding": "id"
-        }
-    ],
     "courses.questions.store": [
         {
             "name": "course",
@@ -247,6 +263,8 @@ declare module 'ziggy-js' {
             "binding": "id"
         }
     ],
+    "explore.index": [],
+    "lecturers.index": [],
     "course-exam.show": [
         {
             "name": "course",

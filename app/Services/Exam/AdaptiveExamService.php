@@ -175,6 +175,7 @@ class AdaptiveExamService
         return [
             'score' => $attempt->score,
             'max_score' => 20,
+            'grade' => $attempt->grade?->value,
             'grade_label' => $attempt->grade?->label(),
             'level_label' => $attempt->start_level->label(),
             'correct' => $answers->where('is_correct', true)->count(),

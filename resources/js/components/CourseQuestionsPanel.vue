@@ -1,31 +1,17 @@
 <script setup lang="ts">
-import { Head, Link, router } from '@inertiajs/vue3';
+import { router } from '@inertiajs/vue3';
 import { Trash2 } from '@lucide/vue';
-import Heading from '@/components/Heading.vue';
 import LecturerQuestionForm from '@/components/LecturerQuestionForm.vue';
 import { Button } from '@/components/ui/button';
-import { coursesIndexUrl } from '@/lib/coursesIndexUrl';
-import type { QuestionListItem, TopicItem, ValueLabelOption } from '@/types';
+import type {
+    QuestionListItem,
+    TopicItem,
+    ValueLabelOption,
+} from '@/types';
 import { route } from 'ziggy-js';
 
-type Course = { id: number; title: string };
-type LayoutProps = { course: Course; auth: { user: { role: string } } };
-
-// Функциональная форма layout — название курса и ролевой родитель в breadcrumbs.
-defineOptions({
-    layout: (props: LayoutProps) => ({
-        breadcrumbs: [
-            { title: 'Courses', href: coursesIndexUrl(props.auth.user.role) },
-            {
-                title: props.course.title,
-                href: route('courses.questions.index', props.course.id),
-            },
-        ],
-    }),
-});
-
 const props = defineProps<{
-    course: Course;
+    courseId: number;
     topics: TopicItem[];
     questions: QuestionListItem[];
     typeOptions: ValueLabelOption[];
@@ -33,38 +19,25 @@ const props = defineProps<{
 }>();
 
 function remove(question: QuestionListItem): void {
-    router.delete(
-        route('courses.questions.destroy', [props.course.id, question.id]),
-    );
+    router.delete(route('courses.questions.destroy', [props.courseId, question.id]), {
+        preserveScroll: true,
+        preserveState: true,
+    });
 }
 </script>
 
 <template>
-    <Head :title="`${course.title} — questions`" />
-
-    <div class="mx-auto flex w-full max-w-3xl flex-col gap-6 p-4">
-        <Heading
-            :title="course.title"
-            description="Author the question bank for this course's exam. Each question belongs to a topic."
-        />
-
+    <div class="flex flex-col gap-4">
         <p
             v-if="topics.length === 0"
             class="rounded-xl border border-dashed p-6 text-center text-sm text-muted-foreground"
         >
-            Add topics first —
-            <Link
-                :href="route('courses.topics.index', course.id)"
-                class="underline"
-            >
-                manage topics
-            </Link>
-            .
+            Add topics first — questions attach to a topic.
         </p>
 
         <LecturerQuestionForm
             v-else
-            :course-id="course.id"
+            :course-id="courseId"
             :topics="topics"
             :type-options="typeOptions"
             :difficulty-options="difficultyOptions"

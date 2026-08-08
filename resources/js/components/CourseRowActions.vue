@@ -29,19 +29,7 @@ const deleteOpen = ref(false);
 <template>
     <div class="flex justify-end gap-2">
         <Button variant="outline" size="sm" as-child>
-            <Link :href="route('courses.topics.index', props.course.id)">
-                Topics
-            </Link>
-        </Button>
-        <Button variant="outline" size="sm" as-child>
-            <Link :href="route('courses.questions.index', props.course.id)">
-                Questions
-            </Link>
-        </Button>
-        <Button variant="outline" size="sm" as-child>
-            <Link :href="route('courses.materials.index', props.course.id)">
-                Materials
-            </Link>
+            <Link :href="route('courses.show', props.course.id)">Manage</Link>
         </Button>
 
         <Dialog v-model:open="editOpen">

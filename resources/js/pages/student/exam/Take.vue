@@ -1,5 +1,6 @@
 <script setup lang="ts">
 import { Head, router, useForm } from '@inertiajs/vue3';
+import { Check } from '@lucide/vue';
 import { computed } from 'vue';
 import { Button } from '@/components/ui/button';
 import type { ExamNav, ExamProgress, ExamQuestion } from '@/types';
@@ -67,15 +68,28 @@ function skip(): void {
                 v-for="option in question.options"
                 :key="option.id"
                 type="button"
-                class="rounded-xl border p-4 text-left transition-colors"
+                class="flex items-center gap-3 rounded-xl border p-4 text-left transition-colors"
                 :class="
                     form.selected_option_id === option.id
                         ? 'border-primary bg-primary/5 ring-1 ring-primary'
-                        : 'hover:bg-muted/50'
+                        : 'hover:border-primary/40 hover:bg-muted/40'
                 "
                 @click="form.selected_option_id = option.id"
             >
-                {{ option.body }}
+                <div
+                    class="flex size-5 shrink-0 items-center justify-center rounded-full border"
+                    :class="
+                        form.selected_option_id === option.id
+                            ? 'border-primary bg-primary text-primary-foreground'
+                            : 'border-muted-foreground/30'
+                    "
+                >
+                    <Check
+                        v-if="form.selected_option_id === option.id"
+                        class="size-3"
+                    />
+                </div>
+                <span>{{ option.body }}</span>
             </button>
         </div>
 

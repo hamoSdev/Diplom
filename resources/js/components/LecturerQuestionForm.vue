@@ -6,6 +6,7 @@ import InputError from '@/components/InputError.vue';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
+import { Textarea } from '@/components/ui/textarea';
 import type { TopicItem, ValueLabelOption } from '@/types';
 import { route } from 'ziggy-js';
 
@@ -84,6 +85,8 @@ function removeOption(index: number): void {
 
 function submit(): void {
     form.post(route('courses.questions.store', props.courseId), {
+        preserveScroll: true,
+        preserveState: true,
         onSuccess: () => {
             form.reset();
             form.options = emptyOptions();
@@ -145,12 +148,7 @@ function submit(): void {
 
         <div class="grid gap-2">
             <Label for="body">Question</Label>
-            <textarea
-                id="body"
-                v-model="form.body"
-                rows="2"
-                class="rounded-md border border-input bg-transparent px-3 py-2 text-sm shadow-xs"
-            />
+            <Textarea id="body" v-model="form.body" rows="2" />
             <InputError :message="form.errors.body" />
         </div>
 
@@ -198,12 +196,7 @@ function submit(): void {
 
         <div class="grid gap-2">
             <Label for="explanation">Explanation (optional)</Label>
-            <textarea
-                id="explanation"
-                v-model="form.explanation"
-                rows="2"
-                class="rounded-md border border-input bg-transparent px-3 py-2 text-sm shadow-xs"
-            />
+            <Textarea id="explanation" v-model="form.explanation" rows="2" />
         </div>
 
         <div>

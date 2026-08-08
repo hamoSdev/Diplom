@@ -45,7 +45,7 @@ defineProps<{
             Your faculty has no subjects yet.
         </p>
 
-        <div v-else class="grid gap-4 md:grid-cols-2">
+        <div v-else class="grid gap-6 md:grid-cols-2 xl:grid-cols-3">
             <StudentSubjectCard
                 v-for="subject in subjects"
                 :key="subject.id"

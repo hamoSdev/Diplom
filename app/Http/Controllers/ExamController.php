@@ -44,6 +44,7 @@ class ExamController extends Controller
             'lastResult' => $last === null ? null : [
                 'id' => $last->id,
                 'score' => $last->score,
+                'grade' => $last->grade?->value,
                 'grade_label' => $last->grade?->label(),
                 'level_label' => $last->start_level->label(),
             ],

@@ -2,7 +2,9 @@
 import { Form, Head } from '@inertiajs/vue3';
 import CourseFormFields from '@/components/CourseFormFields.vue';
 import CourseRowActions from '@/components/CourseRowActions.vue';
+import CourseStatusBadge from '@/components/CourseStatusBadge.vue';
 import Heading from '@/components/Heading.vue';
+import SectionCard from '@/components/SectionCard.vue';
 import { Button } from '@/components/ui/button';
 import {
     Table,
@@ -37,52 +39,64 @@ defineProps<{
             description="Create courses and assign them to a subject and lecturer"
         />
 
-        <Form
-            :action="route('admin.courses.store')"
-            method="post"
-            :reset-on-success="['title']"
-            class="grid max-w-xl gap-4"
-            v-slot="{ errors, processing }"
-        >
-            <CourseFormFields
-                :subjects="subjects"
-                :lecturers="lecturers"
-                :errors="errors"
-            />
-            <div>
-                <Button :disabled="processing" data-test="create-course-button">
-                    Create course
-                </Button>
-            </div>
-        </Form>
+        <SectionCard title="New course">
+            <Form
+                :action="route('admin.courses.store')"
+                method="post"
+                :reset-on-success="['title']"
+                class="grid max-w-xl gap-4"
+                v-slot="{ errors, processing }"
+            >
+                <CourseFormFields
+                    :subjects="subjects"
+                    :lecturers="lecturers"
+                    :errors="errors"
+                />
+                <div>
+                    <Button
+                        :disabled="processing"
+                        data-test="create-course-button"
+                    >
+                        Create course
+                    </Button>
+                </div>
+            </Form>
+        </SectionCard>
 
-        <Table>
-            <TableHeader>
-                <TableRow>
-                    <TableHead>Title</TableHead>
-                    <TableHead>Subject</TableHead>
-                    <TableHead>Lecturer</TableHead>
-                    <TableHead>Status</TableHead>
-                    <TableHead class="text-right">Actions</TableHead>
-                </TableRow>
-            </TableHeader>
-            <TableBody>
-                <TableRow v-for="course in courses" :key="course.id">
-                    <TableCell class="font-medium">{{
-                        course.title
-                    }}</TableCell>
-                    <TableCell>{{ course.subject_name ?? '—' }}</TableCell>
-                    <TableCell>{{ course.lecturer_name }}</TableCell>
-                    <TableCell>{{ course.status_label }}</TableCell>
-                    <TableCell>
-                        <CourseRowActions
-                            :course="course"
-                            :subjects="subjects"
-                            :lecturers="lecturers"
-                        />
-                    </TableCell>
-                </TableRow>
-            </TableBody>
-        </Table>
+        <SectionCard title="All courses" flush>
+            <Table>
+                <TableHeader>
+                    <TableRow>
+                        <TableHead>Title</TableHead>
+                        <TableHead>Subject</TableHead>
+                        <TableHead>Lecturer</TableHead>
+                        <TableHead>Status</TableHead>
+                        <TableHead class="text-right">Actions</TableHead>
+                    </TableRow>
+                </TableHeader>
+                <TableBody>
+                    <TableRow v-for="course in courses" :key="course.id">
+                        <TableCell class="font-medium">
+                            {{ course.title }}
+                        </TableCell>
+                        <TableCell>{{ course.subject_name ?? '—' }}</TableCell>
+                        <TableCell>{{ course.lecturer_name }}</TableCell>
+                        <TableCell>
+                            <CourseStatusBadge
+                                :status="course.status"
+                                :label="course.status_label"
+                            />
+                        </TableCell>
+                        <TableCell>
+                            <CourseRowActions
+                                :course="course"
+                                :subjects="subjects"
+                                :lecturers="lecturers"
+                            />
+                        </TableCell>
+                    </TableRow>
+                </TableBody>
+            </Table>
+        </SectionCard>
     </div>
 </template>

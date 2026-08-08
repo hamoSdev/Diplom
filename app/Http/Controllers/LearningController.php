@@ -30,9 +30,11 @@ class LearningController extends Controller
                 'courses' => $subject->courses->map(fn (Course $course): array => [
                     'id' => $course->id,
                     'title' => $course->title,
+                    'description' => $course->description,
                     'lecturer_name' => $course->lecturer->name,
+                    'status' => $course->status->value,
                     'status_label' => $course->status->label(),
-                ]),
+                ])->all(),
             ]);
 
         return Inertia::render('learning/Index', [
@@ -61,6 +63,7 @@ class LearningController extends Controller
                 'title' => $course->title,
                 'subject_name' => $course->subject->name,
                 'lecturer_name' => $course->lecturer->name,
+                'status' => $course->status->value,
                 'status_label' => $course->status->label(),
                 'content' => $course->content === null ? null : clean($course->content, 'course'),
                 'has_exam' => $course->questions()->exists(),

@@ -1,10 +1,11 @@
 /** Держать в синхроне с App\Enums\CourseStatus. */
 export type CourseStatus = 'draft' | 'generating' | 'ready' | 'failed';
 
-/** Тема курса (см. TopicController). */
+/** Тема курса (см. TopicController). content — AI-материал темы, если сгенерирован. */
 export type TopicItem = {
     id: number;
     title: string;
+    content?: string | null;
 };
 
 /** Вариант value/label для нативного select. */

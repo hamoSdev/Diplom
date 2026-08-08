@@ -2,12 +2,17 @@
 
 use App\Http\Controllers\CourseExamController;
 use App\Http\Controllers\ExamController;
+use App\Http\Controllers\ExploreController;
 use App\Http\Controllers\LearningController;
+use App\Http\Controllers\LecturerDirectoryController;
 use Illuminate\Support\Facades\Route;
 
 Route::middleware(['auth', 'verified', 'role:student'])->group(function () {
     Route::get('my-learning', [LearningController::class, 'index'])->name('learning.index');
     Route::get('my-learning/courses/{course}', [LearningController::class, 'show'])->name('learning.courses.show');
+
+    Route::get('explore', [ExploreController::class, 'index'])->name('explore.index');
+    Route::get('lecturers', [LecturerDirectoryController::class, 'index'])->name('lecturers.index');
 
     Route::get('my-learning/courses/{course}/exam', [CourseExamController::class, 'show'])->name('course-exam.show');
     Route::post('my-learning/courses/{course}/exam/start', [CourseExamController::class, 'start'])->name('course-exam.start');

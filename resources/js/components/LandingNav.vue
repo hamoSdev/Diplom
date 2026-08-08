@@ -37,11 +37,11 @@ const links = [
                 </DropdownMenuTrigger>
                 <DropdownMenuContent
                     align="start"
-                    class="liquid-glass rounded-2xl text-white"
+                    class="liquid-glass min-w-44 rounded-2xl p-1.5 text-white"
                 >
                     <DropdownMenuItem
                         as-child
-                        class="text-white focus:bg-white/10 focus:text-white"
+                        class="cursor-pointer rounded-xl px-3 py-2 text-white focus:bg-white/10 focus:text-white"
                     >
                         <Link :href="route('become-lecturer')">
                             Become lecturer
@@ -49,11 +49,11 @@ const links = [
                     </DropdownMenuItem>
                     <DropdownMenuItem
                         as-child
-                        class="text-white focus:bg-white/10 focus:text-white"
+                        class="cursor-pointer rounded-xl px-3 py-2 text-white focus:bg-white/10 focus:text-white"
                     >
-                        <Link :href="route('our-lecturers')"
-                            >Our lecturers</Link
-                        >
+                        <Link :href="route('our-lecturers')">
+                            Our lecturers
+                        </Link>
                     </DropdownMenuItem>
                 </DropdownMenuContent>
             </DropdownMenu>

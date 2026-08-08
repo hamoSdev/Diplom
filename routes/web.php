@@ -2,6 +2,7 @@
 
 use App\Http\Controllers\CourseMaterialController;
 use App\Http\Controllers\DashboardController;
+use App\Http\Controllers\LecturerApplicationController;
 use Illuminate\Support\Facades\Route;
 
 Route::inertia('/', 'Welcome')->name('home');
@@ -10,6 +11,7 @@ Route::inertia('ai-learning', 'landing/AiLearning')->name('ai-learning');
 Route::inertia('our-courses', 'landing/OurCourses')->name('our-courses');
 Route::inertia('faq', 'landing/Faq')->name('faq');
 Route::inertia('become-lecturer', 'landing/BecomeLecturer')->name('become-lecturer');
+Route::post('become-lecturer', [LecturerApplicationController::class, 'store'])->name('become-lecturer.store');
 Route::inertia('our-lecturers', 'landing/OurLecturers')->name('our-lecturers');
 
 Route::middleware(['auth', 'verified'])->group(function () {

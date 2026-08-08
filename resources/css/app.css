@@ -297,3 +297,31 @@
     height: 0;
     pointer-events: none;
 }
+
+/* Hero-карточка дашборда: фирменный синий градиент с глубиной (см. DashboardHero.vue). */
+.dashboard-hero {
+    background-color: #2563eb;
+    background-image:
+        radial-gradient(
+            130% 130% at 100% 0%,
+            rgba(255, 255, 255, 0.22) 0%,
+            transparent 45%
+        ),
+        radial-gradient(
+            120% 120% at 0% 100%,
+            rgba(30, 58, 138, 0.55) 0%,
+            transparent 50%
+        ),
+        linear-gradient(135deg, #3b82f6 0%, #2563eb 50%, #1e3a8a 100%);
+}
+
+/* Бегущий пунктир соединительной линии в HowItWorks (замена Framer Motion). */
+@keyframes hiw-dash {
+    to {
+        stroke-dashoffset: -140;
+    }
+}
+
+.hiw-path {
+    animation: hiw-dash 3s linear infinite;
+}
