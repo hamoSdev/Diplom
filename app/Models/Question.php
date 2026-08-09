@@ -21,10 +21,11 @@ use Illuminate\Support\Carbon;
  * @property string|null $category
  * @property string $body
  * @property string|null $explanation
+ * @property string|null $expected_answer
  * @property Carbon|null $created_at
  * @property Carbon|null $updated_at
  */
-#[Fillable(['topic_id', 'type', 'difficulty', 'category', 'body', 'explanation'])]
+#[Fillable(['topic_id', 'type', 'difficulty', 'category', 'body', 'explanation', 'expected_answer'])]
 class Question extends Model
 {
     /** @use HasFactory<QuestionFactory> */

@@ -24,7 +24,11 @@ import {
     DialogTitle,
     DialogTrigger,
 } from '@/components/ui/dialog';
-import type { CourseListItem, SelectOption } from '@/types';
+import type {
+    CourseListItem,
+    SelectOption,
+    ValueLabelOption,
+} from '@/types';
 import { route } from 'ziggy-js';
 
 defineOptions({
@@ -36,6 +40,7 @@ defineOptions({
 defineProps<{
     courses: CourseListItem[];
     subjects: SelectOption[];
+    modes: ValueLabelOption[];
 }>();
 
 const createOpen = ref(false);
@@ -71,6 +76,7 @@ const createOpen = ref(false);
                         </DialogHeader>
                         <LecturerCourseFields
                             :subjects="subjects"
+                            :modes="modes"
                             :errors="errors"
                         />
                         <DialogFooter class="gap-2">
@@ -135,6 +141,7 @@ const createOpen = ref(false);
                     <LecturerCourseRowActions
                         :course="course"
                         :subjects="subjects"
+                        :modes="modes"
                         class="w-full"
                     />
                 </CardFooter>

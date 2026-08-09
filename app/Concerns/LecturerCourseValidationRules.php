@@ -2,6 +2,7 @@
 
 namespace App\Concerns;
 
+use App\Enums\CourseGenerationMode;
 use Illuminate\Contracts\Validation\ValidationRule;
 use Illuminate\Validation\Rule;
 
@@ -22,6 +23,7 @@ trait LecturerCourseValidationRules
                 'required',
                 Rule::exists('subject_lecturer', 'subject_id')->where('user_id', $this->user()?->id),
             ],
+            'generation_mode' => ['required', Rule::enum(CourseGenerationMode::class)],
         ];
     }
 }

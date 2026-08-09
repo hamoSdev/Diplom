@@ -13,12 +13,17 @@ import {
     DialogTitle,
     DialogTrigger,
 } from '@/components/ui/dialog';
-import type { CourseListItem, SelectOption } from '@/types';
+import type {
+    CourseListItem,
+    SelectOption,
+    ValueLabelOption,
+} from '@/types';
 import { route } from 'ziggy-js';
 
 const props = defineProps<{
     course: CourseListItem;
     subjects: SelectOption[];
+    modes: ValueLabelOption[];
 }>();
 
 const editOpen = ref(false);
@@ -48,6 +53,7 @@ const deleteOpen = ref(false);
                     </DialogHeader>
                     <LecturerCourseFields
                         :subjects="props.subjects"
+                        :modes="props.modes"
                         :errors="errors"
                         :course="props.course"
                     />

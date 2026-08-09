@@ -1,11 +1,26 @@
 <script setup lang="ts">
 import { Head, Link } from '@inertiajs/vue3';
-import { Download, FileText, GraduationCap, User } from '@lucide/vue';
+import {
+    BookOpen,
+    Download,
+    Dumbbell,
+    FileText,
+    GraduationCap,
+    User,
+} from '@lucide/vue';
+import { ref } from 'vue';
 import CourseStatusBadge from '@/components/CourseStatusBadge.vue';
 import { Button } from '@/components/ui/button';
 import { formatFileSize } from '@/lib/formatFileSize';
 import type { CourseMaterialItem } from '@/types';
 import { route } from 'ziggy-js';
+
+type CourseTopic = {
+    id: number;
+    title: string;
+    content: string | null;
+    has_questions: boolean;
+};
 
 type CourseDetail = {
     id: number;
@@ -17,6 +32,7 @@ type CourseDetail = {
     content: string | null;
     has_exam: boolean;
     materials: CourseMaterialItem[];
+    topics: CourseTopic[];
 };
 
 // Функциональная форма layout: «My learning» — родитель-ссылка (кнопка «назад»),
@@ -36,6 +52,12 @@ defineOptions({
 defineProps<{
     course: CourseDetail;
 }>();
+
+const openTopic = ref<number | null>(null);
+
+function toggleTopic(id: number): void {
+    openTopic.value = openTopic.value === id ? null : id;
+}
 </script>
 
 <template>
@@ -82,6 +104,46 @@ defineProps<{
         >
             This course has no content yet.
         </p>
+
+        <section v-if="course.topics.length > 0" class="flex flex-col gap-2">
+            <h2 class="text-sm font-medium text-muted-foreground">Topics</h2>
+            <div
+                v-for="topic in course.topics"
+                :key="topic.id"
+                class="flex flex-col gap-3 rounded-lg border bg-card p-3"
+            >
+                <div class="flex items-center gap-3">
+                    <span class="flex-1 text-sm font-medium">
+                        {{ topic.title }}
+                    </span>
+                    <Button
+                        v-if="topic.content"
+                        variant="ghost"
+                        size="sm"
+                        @click="toggleTopic(topic.id)"
+                    >
+                        <BookOpen class="size-4" />
+                        Material
+                    </Button>
+                    <Button
+                        v-if="topic.has_questions"
+                        variant="outline"
+                        size="sm"
+                        as-child
+                    >
+                        <Link :href="route('practice.topic', topic.id)">
+                            <Dumbbell class="size-4" />
+                            Practice
+                        </Link>
+                    </Button>
+                </div>
+                <div
+                    v-if="topic.content && openTopic === topic.id"
+                    class="tiptap border-t pt-3"
+                    v-html="topic.content"
+                />
+            </div>
+        </section>
 
         <section v-if="course.materials.length > 0" class="flex flex-col gap-2">
             <h2 class="text-sm font-medium text-muted-foreground">Materials</h2>

@@ -31,9 +31,10 @@ class QuestionController extends Controller
             'difficulty' => $data['difficulty'],
             'body' => $data['body'],
             'explanation' => $data['explanation'] ?? null,
+            'expected_answer' => $data['expected_answer'] ?? null,
         ]);
 
-        foreach (array_values($data['options']) as $position => $option) {
+        foreach (array_values($data['options'] ?? []) as $position => $option) {
             $question->options()->create([
                 'body' => $option['body'],
                 'is_correct' => (bool) $option['is_correct'],

@@ -145,7 +145,7 @@ class DemoSeeder extends Seeder
         while ($question = $exam->nextQuestion($attempt)) {
             $wantCorrect = $question->topic_id !== $weakTopicId;
             $option = $question->options->firstWhere('is_correct', $wantCorrect) ?? $question->options->first();
-            $exam->submitAnswer($attempt, $question, $option->id);
+            $exam->submitAnswer($attempt, $question, ['option_ids' => $option === null ? [] : [$option->id]]);
         }
 
         $exam->finish($attempt);
@@ -168,7 +168,7 @@ class DemoSeeder extends Seeder
         while ($question = $exam->nextQuestion($attempt)) {
             $wantCorrect = (++$index % 3) !== 0;
             $option = $question->options->firstWhere('is_correct', $wantCorrect) ?? $question->options->first();
-            $exam->submitAnswer($attempt, $question, $option->id);
+            $exam->submitAnswer($attempt, $question, ['option_ids' => $option === null ? [] : [$option->id]]);
         }
 
         $exam->finish($attempt);

@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Enums\ExamStartLevel;
 use App\Enums\ExamStatus;
+use App\Enums\QuestionType;
 use App\Http\Requests\StartExamRequest;
 use App\Http\Requests\SubmitAnswerRequest;
 use App\Models\Course;
@@ -131,7 +132,10 @@ class CourseExamController extends Controller
         $question = $this->exam->nextQuestion($attempt);
 
         if ($question !== null) {
-            $this->exam->submitAnswer($attempt, $question, $request->integer('selected_option_id'));
+            $this->exam->submitAnswer($attempt, $question, [
+                'option_ids' => $request->input('selected_option_ids', []),
+                'text' => $request->input('answer_text'),
+            ]);
         }
 
         if ($this->exam->isComplete($attempt)) {
@@ -156,7 +160,11 @@ class CourseExamController extends Controller
         }
 
         while ($question = $this->exam->nextQuestion($attempt)) {
-            $this->exam->submitAnswer($attempt, $question, $question->options->random()->id);
+            $payload = $question->type === QuestionType::Open
+                ? ['option_ids' => [], 'text' => '(skipped)']
+                : ['option_ids' => [$question->options->random()->id], 'text' => null];
+
+            $this->exam->submitAnswer($attempt, $question, $payload);
         }
 
         $this->exam->finish($attempt);

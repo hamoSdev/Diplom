@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import { useForm } from '@inertiajs/vue3';
 import { Plus, X } from '@lucide/vue';
-import { watch } from 'vue';
+import { computed, watch } from 'vue';
 import InputError from '@/components/InputError.vue';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -35,6 +35,7 @@ const form = useForm<{
     difficulty: string;
     body: string;
     explanation: string;
+    expected_answer: string;
     options: QuestionOption[];
 }>({
     topic_id: '',
@@ -42,25 +43,38 @@ const form = useForm<{
     difficulty: 'medium',
     body: '',
     explanation: '',
+    expected_answer: '',
     options: emptyOptions(),
 });
 
-// True/false questions are just two fixed options, so the author only picks
-// which one is correct — the option bodies are locked.
+const isOpen = computed(() => form.type === 'open');
+const isMultiple = computed(() => form.type === 'multiple');
+const isBoolean = computed(() => form.type === 'boolean');
+
+// Reshape the options block to match the selected type.
 watch(
     () => form.type,
     (type) => {
-        form.options =
-            type === 'boolean'
-                ? [
-                      { body: 'True', is_correct: true },
-                      { body: 'False', is_correct: false },
-                  ]
-                : emptyOptions();
+        if (type === 'boolean') {
+            form.options = [
+                { body: 'True', is_correct: true },
+                { body: 'False', is_correct: false },
+            ];
+        } else if (type === 'open') {
+            form.options = [];
+        } else if (form.options.length === 0) {
+            form.options = emptyOptions();
+        }
     },
 );
 
-function setCorrect(index: number): void {
+function toggleCorrect(index: number): void {
+    if (isMultiple.value) {
+        form.options[index].is_correct = !form.options[index].is_correct;
+
+        return;
+    }
+
     form.options.forEach((option, i) => (option.is_correct = i === index));
 }
 
@@ -78,7 +92,7 @@ function removeOption(index: number): void {
     const wasCorrect = form.options[index].is_correct;
     form.options.splice(index, 1);
 
-    if (wasCorrect) {
+    if (wasCorrect && !isMultiple.value) {
         form.options[0].is_correct = true;
     }
 }
@@ -152,25 +166,43 @@ function submit(): void {
             <InputError :message="form.errors.body" />
         </div>
 
-        <div class="grid gap-2">
-            <Label>Options (pick the correct one)</Label>
+        <!-- Open answer: no options, an optional model answer for AI grading. -->
+        <div v-if="isOpen" class="grid gap-2">
+            <Label for="expected_answer">Expected answer (guides AI grading)</Label>
+            <Textarea
+                id="expected_answer"
+                v-model="form.expected_answer"
+                rows="3"
+            />
+            <InputError :message="form.errors.expected_answer" />
+        </div>
+
+        <!-- Option-based types. -->
+        <div v-else class="grid gap-2">
+            <Label>
+                {{
+                    isMultiple
+                        ? 'Options (tick every correct one)'
+                        : 'Options (pick the correct one)'
+                }}
+            </Label>
             <div
                 v-for="(option, index) in form.options"
                 :key="index"
                 class="flex items-center gap-2"
             >
                 <input
-                    type="radio"
+                    :type="isMultiple ? 'checkbox' : 'radio'"
                     :checked="option.is_correct"
-                    @change="setCorrect(index)"
+                    @change="toggleCorrect(index)"
                 />
                 <Input
                     v-model="option.body"
-                    :readonly="form.type === 'boolean'"
+                    :readonly="isBoolean"
                     placeholder="Option text"
                 />
                 <Button
-                    v-if="form.type === 'single'"
+                    v-if="!isBoolean"
                     type="button"
                     variant="ghost"
                     size="icon"
@@ -182,7 +214,7 @@ function submit(): void {
                 </Button>
             </div>
             <Button
-                v-if="form.type === 'single' && form.options.length < 6"
+                v-if="!isBoolean && form.options.length < 6"
                 type="button"
                 variant="outline"
                 size="sm"

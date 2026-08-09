@@ -2,8 +2,10 @@
 
 namespace App\Http\Controllers;
 
+use App\Enums\CourseStatus;
 use App\Enums\UserRole;
 use App\Http\Requests\StoreCourseMaterialRequest;
+use App\Jobs\GenerateCourseFromMaterials;
 use App\Models\Course;
 use App\Models\CourseMaterial;
 use Illuminate\Http\RedirectResponse;
@@ -39,6 +41,34 @@ class CourseMaterialController extends Controller
         Inertia::flash('toast', ['type' => 'success', 'message' => __('Material uploaded.')]);
 
         return to_route('courses.show', $course);
+    }
+
+    /**
+     * Scenario 3: generate a question bank from the uploaded materials with AI.
+     * Runs on the queue; the course sits on Generating while it works.
+     */
+    public function generate(Course $course): RedirectResponse
+    {
+        $this->authorize('update', $course);
+
+        if (! $course->materials()->exists()) {
+            Inertia::flash('toast', ['type' => 'info', 'message' => __('Upload a file first.')]);
+
+            return back();
+        }
+
+        if ($course->status === CourseStatus::Generating) {
+            return back();
+        }
+
+        $course->status = CourseStatus::Generating;
+        $course->save();
+
+        GenerateCourseFromMaterials::dispatch($course);
+
+        Inertia::flash('toast', ['type' => 'success', 'message' => __('Generating questions from materials…')]);
+
+        return back();
     }
 
     /**

@@ -12,7 +12,7 @@ import { route } from 'ziggy-js';
 defineOptions({
     layout: (props: { nav?: ExamNav }) => ({
         breadcrumbs: props.nav?.breadcrumbs ?? [
-            { title: 'Level exam', href: route('exam.show') },
+            { title: 'Self-check', href: route('exam.show') },
         ],
     }),
 });

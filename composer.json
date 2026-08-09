@@ -17,6 +17,7 @@
         "laravel/sanctum": "^4.3",
         "laravel/tinker": "^3.0",
         "mews/purifier": "^3.4",
+        "smalot/pdfparser": "^2.12",
         "tightenco/ziggy": "^2.6"
     },
     "require-dev": {

@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Enums\CourseGenerationMode;
 use App\Enums\CourseStatus;
 use App\Enums\QuestionDifficulty;
 use App\Enums\QuestionType;
@@ -11,6 +12,7 @@ use App\Jobs\GenerateCourseContent;
 use App\Models\Course;
 use App\Models\CourseMaterial;
 use App\Models\Question;
+use App\Models\Setting;
 use App\Models\Topic;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
@@ -37,6 +39,7 @@ class CourseController extends Controller
                 'subject_name' => $course->subject?->name,
                 'status' => $course->status->value,
                 'status_label' => $course->status->label(),
+                'mode_label' => $course->generation_mode->label(),
                 'content' => $course->content === null ? null : clean($course->content, 'course'),
             ],
             'topics' => $course->topics->map(fn (Topic $topic): array => [
@@ -74,7 +77,9 @@ class CourseController extends Controller
             return back();
         }
 
-        $course->update(['status' => CourseStatus::Generating]);
+        // status is guarded (not fillable), so set it directly.
+        $course->status = CourseStatus::Generating;
+        $course->save();
 
         GenerateCourseContent::dispatch($course);
 
@@ -86,12 +91,12 @@ class CourseController extends Controller
     /**
      * Turn backed enum cases into value/label options for a select.
      *
-     * @param  array<int, QuestionType|QuestionDifficulty>  $cases
+     * @param  array<int, QuestionType|QuestionDifficulty|CourseGenerationMode>  $cases
      * @return Collection<int, array{value: string, label: string}>
      */
     private function enumOptions(array $cases): Collection
     {
-        return collect($cases)->map(fn (QuestionType|QuestionDifficulty $case): array => [
+        return collect($cases)->map(fn (QuestionType|QuestionDifficulty|CourseGenerationMode $case): array => [
             'value' => $case->value,
             'label' => $case->label(),
         ]);
@@ -115,11 +120,13 @@ class CourseController extends Controller
                 'subject_name' => $course->subject?->name,
                 'status' => $course->status->value,
                 'status_label' => $course->status->label(),
+                'generation_mode' => $course->generation_mode->value,
             ]);
 
         return Inertia::render('courses/Index', [
             'courses' => $courses,
             'subjects' => $user->taughtSubjects()->orderBy('name')->get(['subjects.id', 'subjects.name']),
+            'modes' => $this->enumOptions(CourseGenerationMode::cases()),
         ]);
     }
 
@@ -128,7 +135,11 @@ class CourseController extends Controller
      */
     public function store(StoreCourseRequest $request): RedirectResponse
     {
-        $request->user()->courses()->create($request->validated());
+        $request->user()->courses()->create([
+            ...$request->validated(),
+            'exam_length' => Setting::int('default_exam_length', 15),
+            'questions_per_topic' => Setting::int('default_questions_per_topic', 5),
+        ]);
 
         Inertia::flash('toast', ['type' => 'success', 'message' => __('Course created.')]);
 

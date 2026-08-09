@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import { router, useForm } from '@inertiajs/vue3';
-import { BookOpen, Check, Pencil, Trash2, X } from '@lucide/vue';
+import { BookOpen, Check, Pencil, Sparkles, Trash2, X } from '@lucide/vue';
 import { ref } from 'vue';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -10,6 +10,7 @@ import { route } from 'ziggy-js';
 const props = defineProps<{
     courseId: number;
     topics: TopicItem[];
+    generating?: boolean;
 }>();
 
 const keep = { preserveScroll: true, preserveState: true };
@@ -46,6 +47,14 @@ function remove(topic: TopicItem): void {
     router.delete(
         route('courses.topics.destroy', [props.courseId, topic.id]),
         keep,
+    );
+}
+
+function generateTopic(topic: TopicItem): void {
+    router.post(
+        route('courses.topics.generate', [props.courseId, topic.id]),
+        {},
+        { preserveScroll: true },
     );
 }
 </script>
@@ -106,6 +115,16 @@ function remove(topic: TopicItem): void {
 
                     <template v-else>
                         <span class="flex-1 font-medium">{{ topic.title }}</span>
+                        <Button
+                            variant="ghost"
+                            size="icon"
+                            class="size-8"
+                            :disabled="generating"
+                            title="Generate material & questions with AI"
+                            @click="generateTopic(topic)"
+                        >
+                            <Sparkles class="size-4" />
+                        </Button>
                         <Button
                             v-if="topic.content"
                             variant="ghost"

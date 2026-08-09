@@ -16,13 +16,15 @@ use Illuminate\Support\Carbon;
  * @property int $question_id
  * @property int|null $topic_id
  * @property int|null $selected_option_id
+ * @property array<int, int>|null $selected_option_ids
+ * @property string|null $answer_text
  * @property bool $is_correct
  * @property QuestionDifficulty $difficulty_at_time
  * @property int $position
  * @property Carbon|null $created_at
  * @property Carbon|null $updated_at
  */
-#[Fillable(['question_id', 'topic_id', 'selected_option_id', 'is_correct', 'difficulty_at_time', 'position'])]
+#[Fillable(['question_id', 'topic_id', 'selected_option_id', 'selected_option_ids', 'answer_text', 'is_correct', 'difficulty_at_time', 'position'])]
 class ExamAnswer extends Model
 {
     /** @use HasFactory<ExamAnswerFactory> */
@@ -37,6 +39,7 @@ class ExamAnswer extends Model
     {
         return [
             'is_correct' => 'boolean',
+            'selected_option_ids' => 'array',
             'difficulty_at_time' => QuestionDifficulty::class,
         ];
     }

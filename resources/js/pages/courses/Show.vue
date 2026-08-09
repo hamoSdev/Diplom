@@ -24,6 +24,7 @@ type Course = {
     subject_name: string | null;
     status: CourseStatus;
     status_label: string;
+    mode_label: string;
     content: string | null;
 };
 
@@ -115,6 +116,11 @@ onBeforeUnmount(stopPoll);
                         :status="course.status"
                         :label="course.status_label"
                     />
+                    <span
+                        class="rounded-full bg-muted px-2 py-0.5 text-xs font-medium"
+                    >
+                        {{ course.mode_label }}
+                    </span>
                 </div>
             </div>
 
@@ -158,7 +164,11 @@ onBeforeUnmount(stopPoll);
         </div>
 
         <div v-show="active === 'topics'">
-            <CourseTopicsPanel :course-id="course.id" :topics="topics" />
+            <CourseTopicsPanel
+                :course-id="course.id"
+                :topics="topics"
+                :generating="isGenerating"
+            />
         </div>
 
         <div v-show="active === 'questions'">
@@ -175,6 +185,7 @@ onBeforeUnmount(stopPoll);
             <CourseMaterialsPanel
                 :course-id="course.id"
                 :materials="materials"
+                :generating="isGenerating"
             />
         </div>
     </div>

@@ -38,4 +38,5 @@ export type CourseListItem = {
     subject_name: string | null;
     status: CourseStatus;
     status_label: string;
+    generation_mode: string;
 };

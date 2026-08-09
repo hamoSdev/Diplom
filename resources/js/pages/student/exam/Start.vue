@@ -12,7 +12,7 @@ import { route } from 'ziggy-js';
 defineOptions({
     layout: (props: { nav?: ExamNav }) => ({
         breadcrumbs: props.nav?.breadcrumbs ?? [
-            { title: 'Level exam', href: route('exam.show') },
+            { title: 'Self-check', href: route('exam.show') },
         ],
     }),
 });
@@ -56,12 +56,12 @@ function begin(): void {
 </script>
 
 <template>
-    <Head :title="props.nav?.title ?? 'Level exam'" />
+    <Head :title="props.nav?.title ?? 'Self-check'" />
 
     <div class="mx-auto flex w-full max-w-2xl flex-col gap-6 p-4">
         <Heading
-            :title="props.nav?.title ?? 'Adaptive level exam'"
-            description="Pick where you think you stand. The exam adapts to each answer and reveals your real level."
+            :title="props.nav?.title ?? 'Knowledge self-check'"
+            description="An AI-powered adaptive check of your knowledge. Pick where you think you stand — it adapts to each answer and reveals your real level."
         />
 
         <Card v-if="lastResult">

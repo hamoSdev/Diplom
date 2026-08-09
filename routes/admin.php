@@ -1,7 +1,9 @@
 <?php
 
+use App\Http\Controllers\Admin\AiMonitorController;
 use App\Http\Controllers\Admin\CourseController;
 use App\Http\Controllers\Admin\FacultyController;
+use App\Http\Controllers\Admin\SettingsController;
 use App\Http\Controllers\Admin\SubjectController;
 use App\Http\Controllers\Admin\UserController;
 use App\Http\Controllers\LecturerApplicationController;
@@ -27,6 +29,11 @@ Route::middleware(['auth', 'verified', 'role:admin'])->prefix('admin')->name('ad
     Route::post('courses', [CourseController::class, 'store'])->name('courses.store');
     Route::put('courses/{course}', [CourseController::class, 'update'])->name('courses.update');
     Route::delete('courses/{course}', [CourseController::class, 'destroy'])->name('courses.destroy');
+
+    Route::get('ai', [AiMonitorController::class, 'index'])->name('ai.index');
+
+    Route::get('settings', [SettingsController::class, 'index'])->name('settings.index');
+    Route::put('settings', [SettingsController::class, 'update'])->name('settings.update');
 
     Route::get('applications', [LecturerApplicationController::class, 'index'])->name('applications.index');
     Route::get('applications/{application}/cv', [LecturerApplicationController::class, 'download'])->name('applications.cv');

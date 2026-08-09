@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Enums\ExamGrade;
 use App\Enums\ExamStatus;
 use App\Enums\UserRole;
 use App\Models\Course;
@@ -31,10 +32,13 @@ class DashboardController extends Controller
     }
 
     /**
-     * Platform-wide counts for an administrator.
+     * Platform-wide counts and learning activity for an administrator.
      */
     private function adminDashboard(): Response
     {
+        $finished = ExamAttempt::query()->where('status', ExamStatus::Finished);
+        $examsTaken = (clone $finished)->count();
+
         return Inertia::render('admin/Dashboard', [
             'stats' => [
                 'students' => User::query()->where('role', UserRole::Student)->count(),
@@ -43,7 +47,69 @@ class DashboardController extends Controller
                 'subjects' => Subject::query()->count(),
                 'courses' => Course::query()->count(),
             ],
+            'activity' => [
+                'exams_taken' => $examsTaken,
+                'active_students' => (clone $finished)->distinct()->count('student_id'),
+                'avg_score' => $examsTaken > 0
+                    ? round((float) (clone $finished)->avg('score'), 1)
+                    : null,
+            ],
+            'grades' => $this->systemGradeDistribution(),
+            'weakTopics' => $this->systemWeakTopics(),
         ]);
+    }
+
+    /**
+     * Count of finished attempts in each grade band, across the platform.
+     *
+     * @return array<int, array{grade: string, label: string, count: int}>
+     */
+    private function systemGradeDistribution(): array
+    {
+        $counts = ExamAttempt::query()
+            ->where('status', ExamStatus::Finished)
+            ->whereNotNull('grade')
+            ->selectRaw('grade, count(*) as total')
+            ->groupBy('grade')
+            ->pluck('total', 'grade');
+
+        return collect(ExamGrade::cases())
+            ->map(fn (ExamGrade $grade): array => [
+                'grade' => $grade->value,
+                'label' => $grade->label(),
+                'count' => (int) ($counts[$grade->value] ?? 0),
+            ])
+            ->all();
+    }
+
+    /**
+     * The platform's weakest topics by success rate, across all finished exams.
+     *
+     * @return array<int, array{title: string, course: string, percent: int}>
+     */
+    private function systemWeakTopics(): array
+    {
+        return ExamAnswer::query()
+            ->whereNotNull('topic_id')
+            ->whereHas('attempt', fn ($query) => $query->where('status', ExamStatus::Finished))
+            ->selectRaw('topic_id, COUNT(*) as total, SUM(is_correct) as correct')
+            ->groupBy('topic_id')
+            ->with(['topic:id,title,course_id', 'topic.course:id,title'])
+            ->get()
+            ->map(function (ExamAnswer $row): array {
+                $total = (int) $row->getAttribute('total');
+                $correct = (int) $row->getAttribute('correct');
+
+                return [
+                    'title' => $row->topic->title,
+                    'course' => $row->topic->course->title,
+                    'percent' => (int) round(100 * $correct / max(1, $total)),
+                ];
+            })
+            ->sortBy('percent')
+            ->take(6)
+            ->values()
+            ->all();
     }
 
     /**

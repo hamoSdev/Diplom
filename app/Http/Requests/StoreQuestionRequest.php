@@ -21,6 +21,7 @@ class StoreQuestionRequest extends FormRequest
     public function rules(): array
     {
         $course = $this->route('course');
+        $isOpen = $this->input('type') === QuestionType::Open->value;
 
         return [
             'topic_id' => [
@@ -31,30 +32,47 @@ class StoreQuestionRequest extends FormRequest
             'difficulty' => ['required', Rule::enum(QuestionDifficulty::class)],
             'body' => ['required', 'string'],
             'explanation' => ['nullable', 'string'],
-            'options' => ['required', 'array', 'min:2', 'max:6'],
-            'options.*.body' => ['required', 'string', 'max:255'],
-            'options.*.is_correct' => ['required', 'boolean'],
+            'expected_answer' => [$isOpen ? 'nullable' : 'prohibited', 'string'],
+            'options' => [$isOpen ? 'prohibited' : 'required', 'array', 'max:6'],
+            'options.*.body' => ['required_with:options', 'string', 'max:255'],
+            'options.*.is_correct' => ['required_with:options', 'boolean'],
         ];
     }
 
     /**
-     * Exactly one option must be the correct one.
+     * Option questions need at least two options and the right number of correct
+     * ones: exactly one for single / true-false, at least one for multiple.
+     * Open questions carry no options.
      */
     public function withValidator(Validator $validator): void
     {
         $validator->after(function (Validator $validator): void {
+            if ($this->input('type') === QuestionType::Open->value) {
+                return;
+            }
+
             $options = $this->input('options');
+            $options = is_array($options) ? $options : [];
+
+            if (count($options) < 2) {
+                $validator->errors()->add('options', __('Provide at least two options.'));
+
+                return;
+            }
+
             $correct = 0;
 
-            if (is_array($options)) {
-                foreach ($options as $option) {
-                    if (is_array($option) && ! empty($option['is_correct'])) {
-                        $correct++;
-                    }
+            foreach ($options as $option) {
+                if (is_array($option) && ! empty($option['is_correct'])) {
+                    $correct++;
                 }
             }
 
-            if ($correct !== 1) {
+            $multiple = $this->input('type') === QuestionType::Multiple->value;
+
+            if ($multiple && $correct < 1) {
+                $validator->errors()->add('options', __('Mark at least one option correct.'));
+            } elseif (! $multiple && $correct !== 1) {
                 $validator->errors()->add('options', __('Exactly one option must be marked correct.'));
             }
         });

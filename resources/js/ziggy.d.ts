@@ -132,6 +132,9 @@ declare module 'ziggy-js' {
             "binding": "id"
         }
     ],
+    "admin.ai.index": [],
+    "admin.settings.index": [],
+    "admin.settings.update": [],
     "admin.applications.index": [],
     "admin.applications.cv": [
         {
@@ -170,6 +173,21 @@ declare module 'ziggy-js' {
             "binding": "id"
         }
     ],
+    "results.index": [],
+    "results.show": [
+        {
+            "name": "course",
+            "required": true,
+            "binding": "id"
+        }
+    ],
+    "results.attempt": [
+        {
+            "name": "attempt",
+            "required": true,
+            "binding": "id"
+        }
+    ],
     "courses.show": [
         {
             "name": "course",
@@ -185,6 +203,13 @@ declare module 'ziggy-js' {
         }
     ],
     "courses.materials.store": [
+        {
+            "name": "course",
+            "required": true,
+            "binding": "id"
+        }
+    ],
+    "courses.materials.generate": [
         {
             "name": "course",
             "required": true,
@@ -234,6 +259,18 @@ declare module 'ziggy-js' {
             "binding": "id"
         }
     ],
+    "courses.topics.generate": [
+        {
+            "name": "course",
+            "required": true,
+            "binding": "id"
+        },
+        {
+            "name": "topic",
+            "required": true,
+            "binding": "id"
+        }
+    ],
     "courses.questions.store": [
         {
             "name": "course",
@@ -259,6 +296,13 @@ declare module 'ziggy-js' {
     "learning.courses.show": [
         {
             "name": "course",
+            "required": true,
+            "binding": "id"
+        }
+    ],
+    "practice.topic": [
+        {
+            "name": "topic",
             "required": true,
             "binding": "id"
         }

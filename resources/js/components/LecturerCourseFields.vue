@@ -2,13 +2,16 @@
 import InputError from '@/components/InputError.vue';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
-import type { CourseListItem, SelectOption } from '@/types';
+import type { CourseListItem, SelectOption, ValueLabelOption } from '@/types';
 
 const props = defineProps<{
     subjects: SelectOption[];
+    modes: ValueLabelOption[];
     errors: Record<string, string>;
     course?: CourseListItem;
 }>();
+
+const defaultMode = props.course?.generation_mode ?? 'subject_only';
 
 const selectClass =
     'h-9 rounded-md border border-input bg-transparent px-3 py-1 text-sm shadow-xs';
@@ -42,5 +45,25 @@ const selectClass =
             </option>
         </select>
         <InputError :message="props.errors.subject_id" />
+    </div>
+
+    <div class="grid gap-2">
+        <Label for="generation_mode">AI mode</Label>
+        <select
+            id="generation_mode"
+            name="generation_mode"
+            :class="selectClass"
+            required
+        >
+            <option
+                v-for="mode in props.modes"
+                :key="mode.value"
+                :value="mode.value"
+                :selected="mode.value === defaultMode"
+            >
+                {{ mode.label }}
+            </option>
+        </select>
+        <InputError :message="props.errors.generation_mode" />
     </div>
 </template>

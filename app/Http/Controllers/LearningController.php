@@ -2,9 +2,11 @@
 
 namespace App\Http\Controllers;
 
+use App\Enums\QuestionType;
 use App\Models\Course;
 use App\Models\CourseMaterial;
 use App\Models\Subject;
+use App\Models\Topic;
 use Illuminate\Http\Request;
 use Inertia\Inertia;
 use Inertia\Response;
@@ -49,7 +51,14 @@ class LearningController extends Controller
      */
     public function show(Request $request, Course $course): Response
     {
-        $course->load('subject:id,name,faculty_id', 'lecturer:id,name', 'materials');
+        $course->load([
+            'subject:id,name,faculty_id',
+            'lecturer:id,name',
+            'materials',
+            'topics' => fn ($query) => $query->withCount([
+                'questions as practice_count' => fn ($q) => $q->where('type', '!=', QuestionType::Open->value),
+            ]),
+        ]);
 
         abort_unless(
             $course->subject !== null
@@ -71,6 +80,12 @@ class LearningController extends Controller
                     'id' => $material->id,
                     'original_name' => $material->original_name,
                     'size' => $material->size,
+                ]),
+                'topics' => $course->topics->map(fn (Topic $topic): array => [
+                    'id' => $topic->id,
+                    'title' => $topic->title,
+                    'content' => $topic->content === null ? null : clean($topic->content, 'course'),
+                    'has_questions' => $topic->getAttribute('practice_count') > 0,
                 ]),
             ],
         ]);

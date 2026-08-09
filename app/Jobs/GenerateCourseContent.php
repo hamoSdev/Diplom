@@ -31,11 +31,14 @@ class GenerateCourseContent implements ShouldQueue
     {
         $generator->generate($this->course);
 
-        $this->course->update(['status' => CourseStatus::Ready]);
+        // status is guarded (not fillable), so set it directly.
+        $this->course->status = CourseStatus::Ready;
+        $this->course->save();
     }
 
     public function failed(?Throwable $exception): void
     {
-        $this->course->update(['status' => CourseStatus::Failed]);
+        $this->course->status = CourseStatus::Failed;
+        $this->course->save();
     }
 }

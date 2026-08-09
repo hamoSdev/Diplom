@@ -5,4 +5,5 @@ export * from './editor';
 export * from './exam';
 export * from './learning';
 export * from './navigation';
+export * from './results';
 export * from './ui';

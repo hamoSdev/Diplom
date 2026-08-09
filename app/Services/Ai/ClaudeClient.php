@@ -2,6 +2,7 @@
 
 namespace App\Services\Ai;
 
+use App\Models\Setting;
 use Illuminate\Support\Facades\Http;
 use RuntimeException;
 
@@ -32,7 +33,7 @@ class ClaudeClient
         ])
             ->timeout(120)
             ->post(self::ENDPOINT, [
-                'model' => config('services.anthropic.model'),
+                'model' => Setting::get('ai_model', config('services.anthropic.model')),
                 'max_tokens' => $maxTokens,
                 'system' => $system,
                 'messages' => [
@@ -44,7 +45,15 @@ class ClaudeClient
             throw new RuntimeException('Anthropic API error: '.$response->status().' '.$response->body());
         }
 
-        return (string) $response->json('content.0.text', '');
+        // The reply is a list of content blocks; with extended thinking the first
+        // block is "thinking", so take the first "text" block rather than [0].
+        foreach ((array) $response->json('content', []) as $block) {
+            if (($block['type'] ?? null) === 'text' && is_string($block['text'] ?? null)) {
+                return $block['text'];
+            }
+        }
+
+        return '';
     }
 
     /**

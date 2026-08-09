@@ -5,10 +5,12 @@ namespace App\Services\Exam;
 use App\Enums\ExamGrade;
 use App\Enums\ExamStartLevel;
 use App\Enums\ExamStatus;
+use App\Enums\QuestionType;
 use App\Models\Course;
 use App\Models\ExamAnswer;
 use App\Models\ExamAttempt;
 use App\Models\Question;
+use App\Models\Setting;
 use App\Models\User;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Support\Collection;
@@ -38,6 +40,8 @@ class AdaptiveExamService
     /** Topics scoring below this percentage are suggested for revision. */
     private const REVISE_THRESHOLD = 60;
 
+    public function __construct(private readonly OpenAnswerGrader $openGrader) {}
+
     /**
      * Begin a new attempt seeded from the student's self-assessed level. Pass a
      * course to run its exam instead of the overall level exam.
@@ -45,12 +49,13 @@ class AdaptiveExamService
     public function start(User $student, ExamStartLevel $level, ?Course $course = null): ExamAttempt
     {
         $bankCount = $this->bankQuery($course?->id)->count();
+        $maxLength = Setting::int('default_exam_length', self::EXAM_LENGTH);
 
         return $student->examAttempts()->create([
             'course_id' => $course?->id,
             'start_level' => $level,
             'ability' => $level->startingTheta(),
-            'length' => max(1, min(self::EXAM_LENGTH, $bankCount)),
+            'length' => max(1, min($maxLength, $bankCount)),
             'status' => ExamStatus::InProgress,
             'started_at' => now(),
         ]);
@@ -89,31 +94,67 @@ class AdaptiveExamService
     }
 
     /**
-     * Record the student's answer and update the ability estimate.
+     * Record the student's answer and update the ability estimate. The payload
+     * carries the chosen option ids (single/multiple/true-false) and/or free
+     * text (open). Open answers are graded later in a batch, so they are stored
+     * as not-yet-correct and do not move the ability estimate here.
+     *
+     * @param  array{option_ids?: array<int, int|string>, text?: string|null}  $payload
      */
-    public function submitAnswer(ExamAttempt $attempt, Question $question, ?int $selectedOptionId): ExamAnswer
+    public function submitAnswer(ExamAttempt $attempt, Question $question, array $payload): ExamAnswer
     {
-        $option = $selectedOptionId === null
-            ? null
-            : $question->options()->whereKey($selectedOptionId)->first();
+        $isOpen = $question->type === QuestionType::Open;
+        $optionIds = $isOpen ? [] : $this->validOptionIds($question, $payload['option_ids'] ?? []);
+        $text = is_string($payload['text'] ?? null) ? trim($payload['text']) : null;
 
-        $isCorrect = (bool) $option?->is_correct;
+        $isCorrect = ! $isOpen && $this->optionsAreCorrect($question, $optionIds);
 
         $answer = $attempt->answers()->create([
             'question_id' => $question->id,
             'topic_id' => $question->topic_id,
-            'selected_option_id' => $option?->id,
+            'selected_option_id' => count($optionIds) === 1 ? $optionIds[0] : null,
+            'selected_option_ids' => $isOpen ? null : $optionIds,
+            'answer_text' => $isOpen ? $text : null,
             'is_correct' => $isCorrect,
             'difficulty_at_time' => $question->difficulty,
             'position' => $attempt->answers()->count() + 1,
         ]);
 
-        $b = $question->difficulty->bValue();
-        $expected = 1 / (1 + exp($b - $attempt->ability));
-        $attempt->ability += self::K * (($isCorrect ? 1 : 0) - $expected);
-        $attempt->save();
+        if (! $isOpen) {
+            $b = $question->difficulty->bValue();
+            $expected = 1 / (1 + exp($b - $attempt->ability));
+            $attempt->ability += self::K * (($isCorrect ? 1 : 0) - $expected);
+            $attempt->save();
+        }
 
         return $answer;
+    }
+
+    /**
+     * Keep only the ids that actually belong to the question, as ints.
+     *
+     * @param  array<int, int|string>  $ids
+     * @return array<int, int>
+     */
+    private function validOptionIds(Question $question, array $ids): array
+    {
+        $valid = $question->options->pluck('id')->all();
+
+        return array_values(array_intersect(array_map('intval', $ids), $valid));
+    }
+
+    /**
+     * An option answer is correct when the chosen set matches the correct set
+     * exactly — one option for single/true-false, all of them for multiple.
+     *
+     * @param  array<int, int>  $optionIds
+     */
+    private function optionsAreCorrect(Question $question, array $optionIds): bool
+    {
+        $correct = $question->options->where('is_correct', true)->pluck('id')->sort()->values()->all();
+        $chosen = collect($optionIds)->unique()->sort()->values()->all();
+
+        return $correct !== [] && $correct === $chosen;
     }
 
     /**
@@ -121,6 +162,9 @@ class AdaptiveExamService
      */
     public function finish(ExamAttempt $attempt): void
     {
+        // Open answers are graded now, in one batch, before scoring.
+        $this->openGrader->gradeOpenAnswers($attempt);
+
         $score = $this->score($attempt);
 
         $attempt->update([
@@ -186,7 +230,10 @@ class AdaptiveExamService
                 'is_correct' => $answer->is_correct,
             ]),
             'topics' => $topics,
-            'revise' => $topics->where('percent', '<', self::REVISE_THRESHOLD)->pluck('title')->values(),
+            'revise' => $topics
+                ->where('percent', '<', Setting::int('revise_threshold', self::REVISE_THRESHOLD))
+                ->pluck('title')
+                ->values(),
         ];
     }
 

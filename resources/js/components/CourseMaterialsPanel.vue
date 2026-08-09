@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import { router, useForm } from '@inertiajs/vue3';
-import { FileText, Trash2 } from '@lucide/vue';
+import { FileText, Sparkles, Trash2 } from '@lucide/vue';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { formatFileSize } from '@/lib/formatFileSize';
@@ -10,6 +10,7 @@ import { route } from 'ziggy-js';
 const props = defineProps<{
     courseId: number;
     materials: CourseMaterialItem[];
+    generating?: boolean;
 }>();
 
 const keep = { preserveScroll: true, preserveState: true };
@@ -35,6 +36,14 @@ function remove(material: CourseMaterialItem): void {
         keep,
     );
 }
+
+function generate(): void {
+    router.post(
+        route('courses.materials.generate', props.courseId),
+        {},
+        { preserveScroll: true },
+    );
+}
 </script>
 
 <template>
@@ -57,6 +66,24 @@ function remove(material: CourseMaterialItem): void {
                     Upload
                 </Button>
             </div>
+        </div>
+
+        <div
+            v-if="materials.length > 0"
+            class="flex items-center justify-between gap-3 rounded-xl border border-dashed p-3"
+        >
+            <span class="text-sm text-muted-foreground">
+                Generate a question bank from these files with AI.
+            </span>
+            <Button
+                variant="outline"
+                size="sm"
+                :disabled="generating"
+                @click="generate"
+            >
+                <Sparkles class="size-4" />
+                {{ generating ? 'Generating…' : 'Generate questions' }}
+            </Button>
         </div>
 
         <p
