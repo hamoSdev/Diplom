@@ -19,7 +19,7 @@ onMounted(() => {
 </script>
 
 <template>
-    <Head title="Velorah" />
+    <Head title="SkillLab" />
 
     <div
         class="relative min-h-screen overflow-hidden bg-[#002b42] font-sans text-white"

@@ -1,6 +1,7 @@
 <script setup lang="ts">
 import { Link } from '@inertiajs/vue3';
 import { ChevronDown } from '@lucide/vue';
+import AppLogoIcon from '@/components/AppLogoIcon.vue';
 import {
     DropdownMenu,
     DropdownMenuContent,
@@ -22,9 +23,10 @@ const links = [
     >
         <Link
             :href="route('home')"
-            class="font-display text-3xl tracking-tight"
+            class="flex items-center gap-2.5 text-2xl font-bold tracking-tight"
         >
-            Velorah<sup class="text-xs">®</sup>
+            <AppLogoIcon class="size-8 text-primary" />
+            <span>Skill<span class="text-primary">Lab</span></span>
         </Link>
 
         <div class="hidden items-center gap-8 md:flex">
